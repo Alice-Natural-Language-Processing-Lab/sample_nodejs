@@ -28,7 +28,7 @@ http.createServer((req, res) =>
 
 function data_trans(res)
 {
-    //자바스크립트 객체를 JSON으로 변환(JSON타입을 만든다.)//
+    //자바스크립트 객체를 JSON으로 변환(JSON형식을 만든다.)//
     var accountstrObj = 
     {
         "name":"John",
@@ -38,6 +38,7 @@ function data_trans(res)
     }   
 
     var accountstrStr = JSON.stringify(accountstrObj); //string으로 반환//
+
     console.log(accountstrStr); //JSON반환//
     res.end(accountstrStr);
 }

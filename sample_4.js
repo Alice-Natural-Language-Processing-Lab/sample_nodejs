@@ -1,5 +1,5 @@
 //자바스크립트 함수 실습//
-//즉시실행함수 모드(함수도 객체다라는 관점)//
+//즉시실행함수 모드('함수도 객체' 다라는 관점)//
 var clerk = (function()
 {
     var name = 'Seo chang wook';
@@ -24,7 +24,7 @@ var clerk = (function()
     };
 
     //public 속성//
-    //값을 반환//
+    //값을 반환(여러값을 리턴)//
     return{
         name : name,
         sex : sex,
