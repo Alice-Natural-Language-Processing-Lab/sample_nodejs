@@ -6,7 +6,7 @@ var app = express();
 var bodyParser = require('body-parser')
 app.use( bodyParser.json() );       // to support JSON-encoded bodies
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
-  extended: true
+    extended: true
 })); 
 
 //GET방식//
@@ -15,6 +15,7 @@ app.get('/endpoint_get', function(request, response){
 
     response.end('id(get): '+id);
 });
+
 //POST방식//
 app.post('/endpoint_post', function(request, response){
     var id = request.body.id;
