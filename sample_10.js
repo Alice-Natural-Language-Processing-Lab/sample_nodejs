@@ -52,6 +52,15 @@ app.post('/db_sample', function(request, response){
 
         DELETE_func(response, name);
     }
+
+    else if(type_str == 'search')
+    {
+        name = request.body.name;
+
+        var search_name = name;
+
+        SEARCH_func(response, search_name);
+    }
     
     else{
         response.send('input command SQL (select, insert, update, delete)');
@@ -135,6 +144,67 @@ function DELETE_func(response, name)
             response.send(result);
 
             console.log('delete success...');
+        }
+    });
+
+    connection.end(); //데이터베이스 작업을 한 이후 반드시 닫아준다.//
+}
+/////////////////////////////
+function SEARCH_func(response, search_name)
+{
+    var is_search = false; //처음엔 실패했다고 가정//
+
+    //우선 검색을 하기 위해서 데이터베이스의 내용을 리스트로 불러와야 한다.//
+    var connection = db_connection_pool(); //DB Connection pool//
+
+    connection.query('select name from sample', function(error, rows, fields){
+        if(error) throw error;
+        else{
+            for(var i=0; i<rows.length; i++)
+            {
+                if(rows[i].name == search_name)
+                {
+                    is_search = true;
+
+                    break;
+                }
+            }
+
+            if(is_search == true)
+            {
+                //결과에 따른 전송할 json포맷을 정의//
+                var result_object = 
+                {
+                    "is_search":is_search
+                }
+                
+                var object = 
+                {
+                    "result":result_object
+                }    
+
+                var trans_jsonstr = JSON.stringify(object); //string으로 반환//
+
+                response.send(trans_jsonstr);
+            }
+
+            else if(is_search == false)
+            {
+                //결과에 따른 전송할 json포맷을 정의//
+                var result_object = 
+                {
+                    "is_search":is_search
+                }
+                
+                var object = 
+                {
+                    "result":result_object
+                }   
+                
+                var trans_jsonstr = JSON.stringify(object); //string으로 반환//
+
+                response.send(trans_jsonstr);
+            }
         }
     });
 
