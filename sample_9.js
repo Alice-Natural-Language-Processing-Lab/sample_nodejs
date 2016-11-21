@@ -37,8 +37,8 @@ app.post('/push', function(request, response){
 
     if(message_str == 'push')
     {
-        pushAlarm(message_str); //푸시 전송//
         data_trans(response);
+        pushAlarm(message_str); //푸시 전송//
     }
     
     else{
@@ -70,18 +70,26 @@ function pushAlarm(message_str)
 
     console.log('push send success... [message : '+message_str+ ']');
 
-    registrationIds = []; //초기화//
+    registrationIds = []; //배열 초기화//
 }
 ///////////////////////
 function data_trans(response)
 {
+    //전송변수//
+    var array = new Array(); //배열선언//
+
+    array.push('seo chang wook');
+    array.push('seo dong wook');
+    array.push("good!!");
+
     //자바스크립트 객체를 JSON으로 변환(JSON형식을 만든다.)//
     var accountstrObj = 
     {
         "name":"John",
-        "members":["Sam", "Smith"],
+        "members":array,
         "number":123456,
-        "location":"seoul"
+        "location":"seoul",
+        "message":message_str
     }   
 
     var accountstrStr = JSON.stringify(accountstrObj); //string으로 반환//
