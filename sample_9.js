@@ -14,6 +14,7 @@ var server_api_key = "AIzaSyA-TPJ-6ueqhzcdFlCxz0A5SgBVKTuN1MI";
 var sender = new gcm.Sender(server_api_key);
 var registrationIds = [];
 
+//FCM메세지 설정//
 var message = new gcm.Message({
     collapseKey: 'demo',
     delayWhileIdle: true,
@@ -36,7 +37,8 @@ app.post('/push', function(request, response){
 
     if(message_str == 'push')
     {
-        pushAlarm(response, message_str);
+        pushAlarm(message_str); //푸시 전송//
+        data_trans(response);
     }
     
     else{
@@ -48,7 +50,7 @@ app.listen(3000, function(){
     console.log('push alarm test server');
 });
 //////////////////////
-function pushAlarm(response, message_str)
+function pushAlarm(message_str)
 {
     //푸시알람을 지정된 토큰값으로 전송//
     message_str = message_str + '(from nodejs)';
@@ -66,9 +68,25 @@ function pushAlarm(response, message_str)
         console.log(result);
     });
 
-    response.send('push send success...');
-
     console.log('push send success... [message : '+message_str+ ']');
 
     registrationIds = []; //초기화//
+}
+///////////////////////
+function data_trans(response)
+{
+    //자바스크립트 객체를 JSON으로 변환(JSON형식을 만든다.)//
+    var accountstrObj = 
+    {
+        "name":"John",
+        "members":["Sam", "Smith"],
+        "number":123456,
+        "location":"seoul"
+    }   
+
+    var accountstrStr = JSON.stringify(accountstrObj); //string으로 반환//
+
+    console.log(accountstrStr); //JSON반환//
+
+    response.send(accountstrStr);
 }
