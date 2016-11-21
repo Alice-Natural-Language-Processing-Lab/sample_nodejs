@@ -162,7 +162,7 @@ function SEARCH_func(response, search_name)
         else{
             for(var i=0; i<rows.length; i++)
             {
-                if(rows[i].name == search_name)
+                if(rows[i].name == search_name) //행을 돌면서 비교//
                 {
                     is_search = true;
 
@@ -172,6 +172,8 @@ function SEARCH_func(response, search_name)
 
             if(is_search == true)
             {
+                //var array = new Array(); //JSONArray에형식으로 하고 싶으면 Array()를 이용//
+
                 //결과에 따른 전송할 json포맷을 정의//
                 var result_object = 
                 {
@@ -180,10 +182,13 @@ function SEARCH_func(response, search_name)
                 
                 var object = 
                 {
-                    "result":result_object
+                    "result":result_object //JSONObject를에 JSONObject를를 넣는 구조//
                 }    
 
-                var trans_jsonstr = JSON.stringify(object); //string으로 반환//
+                //array.push(object); //JSONArray에 JSONObject를 넣는 구조//
+                //array.push(object);
+
+                var trans_jsonstr = JSON.stringify(array); //string으로 반환//
 
                 response.send(trans_jsonstr);
             }
