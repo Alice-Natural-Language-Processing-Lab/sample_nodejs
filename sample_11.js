@@ -22,7 +22,7 @@ var files = new Array();
 
 //기본 post방식으로 전송//
 app.post('/file_upload', function(request, response){
-    //form타입 필드(text타입)에 따른 이벤트//
+    //form타입 필드(text타입)에 따른 이벤트(콜백 방식으로 구성)//
     form.on('field', function(field, value){
         //console.log('[field]' + field, value);
         fields.push([field, value]);
@@ -33,10 +33,10 @@ app.post('/file_upload', function(request, response){
         files.push([field, file.name]);
     }).on('end', function() {
         //console.log('-> upload done');
-        response.writeHead(200, {'content-type': 'text/plain'});
-        response.write('received fields:\n\n '+util.inspect(fields));
-        response.write('\n\n');
-        response.end('received files:\n\n '+util.inspect(files));
+        //response.writeHead(200, {'content-type': 'text/plain'});
+        //response.write('received fields:\n\n '+util.inspect(fields));
+        //response.write('\n\n');
+        //response.end('received files:\n\n '+util.inspect(files));
 
         console.log('----------<fields>----------');
         var field_json = JSON.stringify(fields); //string으로 반환//
@@ -45,6 +45,20 @@ app.post('/file_upload', function(request, response){
         var files_json = JSON.stringify(files); //string으로 반환//
         console.log(files_json);
         console.log('-----------------------------');
+
+        //전송 json객체를 만든다.//
+        var result = 
+        {
+            'fields':field_json,
+            'files':files_json
+        }
+
+        var trans_objeect = 
+        {
+            'result':result
+        }
+
+        response.send(trans_objeect);
 
         fields = [];
         files = [];
