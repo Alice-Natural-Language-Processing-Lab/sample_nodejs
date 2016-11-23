@@ -6,25 +6,22 @@ var bodyParser = require('body-parser'); //POST방식//
 var util = require('util');
 
 var app = express();
+//POST설정//
+app.use(bodyParser.json());
+
+var form = new formidable.IncomingForm();
+//업로드 정보(인코딩, 저장 디렉터리) 설정//
+form.encoding = 'utf-8'; //인코딩 타입 정의//
+form.uploadDir = '/Users/apple/Desktop/Programmingfile/nodejs/sample_nodejs/upload_file_folder'; //저장 디렉터리 지정//
+form.multiples = true; //request.files to be arrays of files//
+form.keepExtensions = true; //확장자 표시//
 
 //받는 변수//
 var fields = new Array();
 var files = new Array();
 
-//POST설정//
-app.use(bodyParser.json());
-
 //기본 post방식으로 전송//
 app.post('/file_upload', function(request, response){
-    //값을 받아온다.//
-    var form = new formidable.IncomingForm();
-
-    //업로드 정보(인코딩, 저장 디렉터리) 설정//
-    form.encoding = 'utf-8'; //인코딩 타입 정의//
-    form.uploadDir = '/Users/apple/Desktop/Programmingfile/nodejs/sample_nodejs/upload_file_folder'; //저장 디렉터리 지정//
-    form.multiples = true; //request.files to be arrays of files//
-    form.keepExtensions = true; //확장자 표시//
-
     //form타입 필드(text타입)에 따른 이벤트//
     form.on('field', function(field, value){
         //console.log('[field]' + field, value);
