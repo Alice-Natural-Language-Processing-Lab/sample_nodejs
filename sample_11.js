@@ -19,26 +19,35 @@ app.post('/file_upload', function(request, response){
     //값을 받아온다.//
     var form = new formidable.IncomingForm();
 
-    //업로드 정보 설정//
+    //업로드 정보(인코딩, 저장 디렉터리) 설정//
     form.encoding = 'utf-8'; //인코딩 타입 정의//
     form.uploadDir = '/Users/apple/Desktop/Programmingfile/nodejs/sample_nodejs/upload_file_folder'; //저장 디렉터리 지정//
     form.multiples = true; //request.files to be arrays of files//
     form.keepExtensions = true; //확장자 표시//
 
-    //form타입 필드에 따른 이벤트//
+    //form타입 필드(text타입)에 따른 이벤트//
     form.on('field', function(field, value){
-        console.log('[field]' + field, value);
+        //console.log('[field]' + field, value);
         fields.push([field, value]);
+    //from타입 필드(file타입)에 따른 이벤트//
     }).on('file', function(field, file){
-        console.log('[file]' + field, file);
+        //console.log('[file]' + field, file);
         fs.rename(file.path, form.uploadDir+ '/' + file.name); //파일의 이름 변경//
-        files.push([field, file]);
+        files.push([field, file.name]);
     }).on('end', function() {
-        console.log('-> upload done');
+        //console.log('-> upload done');
         response.writeHead(200, {'content-type': 'text/plain'});
         response.write('received fields:\n\n '+util.inspect(fields));
         response.write('\n\n');
         response.end('received files:\n\n '+util.inspect(files));
+
+        console.log('----------<fields>----------');
+        var field_json = JSON.stringify(fields); //string으로 반환//
+        console.log(field_json);
+        console.log('----------<files>------------');
+        var files_json = JSON.stringify(files); //string으로 반환//
+        console.log(files_json);
+        console.log('-----------------------------');
 
         fields = [];
         files = [];
@@ -49,6 +58,7 @@ app.post('/file_upload', function(request, response){
     form.parse(request, function(error, field, file) {
         // end 이벤트까지 전송되고 나면 최종적으로 호출되는 부분
         console.log('[parse()] error : ' + error + ', field : ' + field  + ', file : ' + file);
+        console.log('upload succcess...');
     });
 });
 
