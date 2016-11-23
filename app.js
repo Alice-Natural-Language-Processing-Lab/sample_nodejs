@@ -6,7 +6,7 @@ var app = express();
 
 /* 
 (/function) 라우터에 위임된 항목 :
-ex) /function/~
+ex) /function/~(각 파일들에 있는 호출파람)
 1. function/file_upload.js
 2. function/push.js
 */
@@ -19,7 +19,7 @@ app.use('/function', function_push_router);
 
 /* 
 (/sample) 라우터에 위임된 항목 :
-ex) /sample/~
+ex) /sample/~(각 파일들에 있는 호출파람)
 1. sample/sample_8.js
 2. sample/sample_9.js
 3. sample/sample_10.js
