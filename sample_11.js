@@ -9,13 +9,19 @@ var app = express();
 //POST설정//
 app.use(bodyParser.json());
 
+//파일들이 있는 디렉터리(정적파일)를 사용하기 위해서 설정//
+app.use(express.static('upload_file_folder'));
+
 //받는 변수//
 var fields = new Array();
 var files = new Array();
 
+//파일저장타입(IP/PORT)//
+var file_save_info = '192.168.0.6:3000/';
+
 //기본 post방식으로 전송//
 app.post('/file_upload', function(request, response){
-    var form = new formidable.IncomingForm(); //헤더를 만들어주는 역할이기에 밖에 있으면 안된다.//
+    var form = new formidable.IncomingForm(); //헤더를 만들어주는 역할이기에 밖에 있으면 안된다.(헤더 중첩에러 발생)//
     //업로드 정보(인코딩, 저장 디렉터리) 설정//
     form.encoding = 'utf-8'; //인코딩 타입 정의//
     form.uploadDir = '/Users/apple/Desktop/Programmingfile/nodejs/sample_nodejs/upload_file_folder'; //저장 디렉터리 지정//
@@ -30,7 +36,7 @@ app.post('/file_upload', function(request, response){
     }).on('file', function(field, file){
         //console.log('[file]' + field, file);
         fs.rename(file.path, form.uploadDir+ '/' + file.name); //파일의 이름 변경//
-        files.push([field, file.name]);
+        files.push([field, file_save_info+file.name]);
     }).on('end', function() {
         console.log('----------<fields>----------');
         var field_json = JSON.stringify(fields); //string으로 반환//
@@ -69,6 +75,7 @@ app.post('/file_upload', function(request, response){
     });
 });
 
+//포트를 설정하여 접근할 수 있도록 개방//
 app.listen(3000, function(){
     console.log('file upload test server');
 })
