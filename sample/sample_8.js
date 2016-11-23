@@ -1,23 +1,25 @@
 //express모듈(endpoint등록가능)//
 var express = require('express');
 var app = express(); 
+//라우터별로 분리하기 위해 express의 라우터 기능 사용//
+var router = express.Router();
 
 //POST를 적용하기 위한 설정//
 var bodyParser = require('body-parser')
-app.use( bodyParser.json() );       // to support JSON-encoded bodies
-app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+router.use( bodyParser.json() );       // to support JSON-encoded bodies
+router.use(bodyParser.urlencoded({     // to support URL-encoded bodies
     extended: true
 })); 
 
 //GET방식//
-app.get('/endpoint_get', function(request, response){
+router.get('/endpoint_get', function(request, response){
     var id = request.query.id;
 
     response.end('id(get): '+id);
 });
 
 //POST방식//
-app.post('/endpoint_post', function(request, response){
+router.post('/endpoint_post', function(request, response){
     var id = request.body.id;
 
     //관련 작업하기//
@@ -29,10 +31,6 @@ app.post('/endpoint_post', function(request, response){
     else{
         response.end('id(post): '+id);
     }
-});
-
-app.listen(3000, function(){
-    console.log('node express app started at http://localhost:3000');
 });
 ///////////////////////
 function data_trans(response)
@@ -51,3 +49,5 @@ function data_trans(response)
     console.log(accountstrStr); //JSON반환//
     response.end(accountstrStr);
 }
+
+module.exports = router; //모듈 적용//

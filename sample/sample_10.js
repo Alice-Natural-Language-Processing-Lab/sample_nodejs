@@ -3,6 +3,8 @@ var express = require('express');
 var bodyParser = require('body-parser'); //POST방식//
 
 var app = express();
+//라우터별로 분리하기 위해 express의 라우터 기능 사용//
+var router = express.Router();
 
 //입력변수//
 var name;
@@ -11,12 +13,12 @@ var password;
 var type_str;
 
 //POST설정//
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({     //to support URL-encoded bodies (url-encoded방식)//
+router.use(bodyParser.json());
+router.use(bodyParser.urlencoded({     //to support URL-encoded bodies (url-encoded방식)//
     extended: true
 }));
 
-app.post('/db_sample', function(request, response){
+router.post('/db_sample', function(request, response){
     type_str = request.body.message; //전송할 메세지를 받는다.//
 
     if(type_str == 'select')
@@ -65,10 +67,6 @@ app.post('/db_sample', function(request, response){
     else{
         response.send('input command SQL (select, insert, update, delete)');
     }
-});
-
-app.listen(3000, function(){
-    console.log('db test server');
 });
 /////////////////////////////
 function SELECT_func(response)
@@ -241,3 +239,5 @@ function db_connection_pool()
 
     return connection;
 }
+
+module.exports = router; //모듈 적용//

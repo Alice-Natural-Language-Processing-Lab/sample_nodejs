@@ -13,3 +13,5 @@ var data = fs.readFile('test.txt', {encoding:'utf8'}, function(err, data){
 
     console.log(data);
 })
+
+module.exports = router; //모듈 적용//

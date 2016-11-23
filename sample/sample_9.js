@@ -4,6 +4,8 @@ var fs = require('fs');
 var bodyParser = require('body-parser'); //POST방식//
 
 var app = express();
+//라우터별로 분리하기 위해 express의 라우터 기능 사용//
+var router = express.Router();
 
 //받을 변수//
 var message_str;
@@ -27,12 +29,12 @@ var message = new gcm.Message({
     }
 });
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+router.use(bodyParser.json());
+router.use(bodyParser.urlencoded({     // to support URL-encoded bodies
     extended: true
 })); 
 
-app.post('/push', function(request, response){
+router.post('/push', function(request, response){
     message_str = request.body.message; //전송할 메세지를 받는다.//
 
     if(message_str == 'push')
@@ -44,10 +46,6 @@ app.post('/push', function(request, response){
     else{
         response.send('input data : push -> push send');
     }
-});
-
-app.listen(3000, function(){
-    console.log('push alarm test server');
 });
 //////////////////////
 function pushAlarm(message_str)
@@ -98,3 +96,5 @@ function data_trans(response)
 
     response.send(accountstrStr);
 }
+
+module.exports = router; //모듈 적용//
