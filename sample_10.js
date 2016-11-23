@@ -12,7 +12,7 @@ var type_str;
 
 //POST설정//
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
+app.use(bodyParser.urlencoded({     //to support URL-encoded bodies (url-encoded방식)//
     extended: true
 }));
 
