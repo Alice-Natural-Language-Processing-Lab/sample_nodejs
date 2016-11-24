@@ -2,12 +2,13 @@ var express = require('express');
 
 var app = express();
 
-//라우터별로 분리하기 위해 express의 라우터 기능 사용//
+//파일들이 있는 디렉터리(정적파일)를 사용하기 위해서 설정//
+app.use(express.static('upload_file_folder'));
 
 /* 
 (/function) 라우터에 위임된 항목 :
 ex) /function/~(각 파일들에 있는 호출파람)
-1. function/file_upload.js
+1. function/file_upload.js (라우터 경로))
 2. function/push.js
 */
 //사용자 정의 모듈 호출(모듈경로)//
