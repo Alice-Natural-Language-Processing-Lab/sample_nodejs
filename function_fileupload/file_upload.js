@@ -5,6 +5,7 @@ var fs = require('fs');
 var bodyParser = require('body-parser'); //POST방식//
 var util = require('util');
 var os = require('os');
+var mysql = require('mysql'); //데이터베이스 연결 모듈//
 
 var app = express();
 //라우터별로 분리하기 위해 express의 라우터 기능 사용//
@@ -51,8 +52,8 @@ router.post('/file_upload', function(request, response){
     }).on('file', function(field, file){
         //console.log('[file]' + field, file);
         fs.rename(file.path, form.uploadDir+ '/' + file.name); //파일의 이름 변경//
-        files.push([field, file_save_info+file.name]);
-        files_array.push(file_save_info+file.name);
+        files.push([field, file.name]);
+        files_array.push(file.name);
     }).on('end', function() {
         console.log('----------<fields>----------');
         var field_json = JSON.stringify(fields); //json으로 반환//
@@ -63,26 +64,49 @@ router.post('/file_upload', function(request, response){
         console.log('-----------------------------');
 
         //추가작업(데이터베이스)//
-        set_data(fields_array, files_array)
+        var is_success = set_data(fields_array, files_array, response)
 
-        //전송 json객체를 만든다.//
-        var result = 
+        if(is_success == true) //파일저장 성공//
         {
-            'fields':field_json,
-            'files':files_json
+            //전송 json객체를 만든다.//
+            var result = 
+            {
+                'fields':field_json,
+                'files':files_json
+            }
+
+            var trans_objeect = 
+            {
+                'is_upload':'success',
+                'data': result
+            }
+
+            response.send(trans_objeect);   
         }
 
-        var trans_objeect = 
+        else if(is_success == false)
         {
-            'is_upload':'success',
-            'data': result
+            //전송 json객체를 만든다.//
+            var result = 
+            {
+                'fields':field_json,
+                'files':files_json
+            }
+
+            var trans_objeect = 
+            {
+                'is_upload':'fail',
+                'data': result
+            }   
+
+            response.send(trans_objeect);
         }
 
-        response.send(trans_objeect);
-
+        //초기화//
         fields = [];
         files = [];
-        
+        fields_array = [];
+        files_array = [];
     }).on('error', function(error) {
         console.log('[error] error : ' + error);
     });
@@ -94,9 +118,9 @@ router.post('/file_upload', function(request, response){
     });
 });
 //////////////////////////
-function set_data(fields_array, files_array)
+function set_data(fields_array, files_array, response)
 {
-    var is_duplicate_check = false; //기본적으로 중복이 되어있지 않다고 가정//
+    var is_duplicate_check = false; //기본적으로 저장이 실패라 가정//
 
     //저장변수//
     var name, id, password;
@@ -127,12 +151,67 @@ function set_data(fields_array, files_array)
     console.log('id : ' + id);
     console.log('password : ' + password);
 
-    profile_imagefile = files_array;
+    profile_imagefile = files_array; //배열을 저장.//
 
     for(var i=0; i<profile_imagefile.length; i++)
     {
         console.log('file name : ' + profile_imagefile[i]);
     }
+
+    //데이터베이스에 저장.//
+    //파일을 1개 들어온다는 가정이니 insert문을 for문을 이용해서 한번만 수행//
+    var connection = db_connection_pool(); //DB Connection pool//
+    
+    console.log('***********');
+
+    for(var i=0; i<profile_imagefile.length; i++)
+    {
+        console.log('insert ['+profile_imagefile[i]+']');
+
+        //파일 중복검사 실시//
+
+        var insert_data_array = [profile_imagefile[i]]; //배열로 만든다.//
+
+        connection.query('insert into filetable(filename) values(?)',insert_data_array, function(error, result){
+            if(error) throw error;
+            else{
+                console.log('insert success... ['+is_duplicate_check+']');
+                console.log('***********');
+            }
+        });
+
+        is_duplicate_check = true;
+    }
+
+    connection.end(); //데이터베이스 작업을 한 이후 반드시 닫아준다.//
+
+    return is_duplicate_check;
+}
+//////////////////////////////
+function db_connection_pool()
+{
+    //데이터베이스 정보 설정//
+    var connection = mysql.createConnection({
+        host : 'localhost', //db ip address//
+        port : 3306, //db port number//
+        user : 'root', //db id//
+        password : '3315', //db password//
+        database : 'blogtest' //db schema name//
+    });
+
+    //mysql connection//
+    connection.connect(function(err){
+        if(err){
+            console.error('mysql connection error');
+            console.error(err);
+        }
+
+        else{
+            console.log('connection success...');
+        }
+    });
+
+    return connection;
 }
 
 module.exports = router; //모듈 적용//

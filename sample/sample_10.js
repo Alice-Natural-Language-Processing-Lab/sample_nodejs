@@ -186,7 +186,7 @@ function SEARCH_func(response, search_name)
                 //array.push(object); //JSONArray에 JSONObject를 넣는 구조//
                 //array.push(object);
 
-                var trans_jsonstr = JSON.stringify(array); //string으로 반환//
+                var trans_jsonstr = JSON.stringify(object); //string으로 반환//
 
                 response.send(trans_jsonstr);
             }
