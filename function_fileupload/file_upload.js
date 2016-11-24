@@ -66,6 +66,8 @@ router.post('/file_upload', function(request, response){
         //추가작업(데이터베이스)//
         var is_success = set_data(fields_array, files_array, response)
 
+        console.log('is_success: '+is_success);
+
         if(is_success == true) //파일저장 성공//
         {
             //전송 json객체를 만든다.//
@@ -120,11 +122,11 @@ router.post('/file_upload', function(request, response){
 //////////////////////////
 function set_data(fields_array, files_array, response)
 {
-    var is_duplicate_check = false; //기본적으로 저장이 실패라 가정//
+    var is_success = false; //기본적으로 저장이 실패라 가정//
 
     //저장변수//
     var name, id, password;
-    var profile_imagefile = []; //파일은 여러개가 될 수 있으니 배열//
+    var file_name = []; //파일은 여러개가 될 수 있으니 배열//
 
     console.log('db job...');
 
@@ -151,41 +153,92 @@ function set_data(fields_array, files_array, response)
     console.log('id : ' + id);
     console.log('password : ' + password);
 
-    profile_imagefile = files_array; //배열을 저장.//
-
-    for(var i=0; i<profile_imagefile.length; i++)
-    {
-        console.log('file name : ' + profile_imagefile[i]);
-    }
+    file_name = files_array; //배열을 저장.//
 
     //데이터베이스에 저장.//
     //파일을 1개 들어온다는 가정이니 insert문을 for문을 이용해서 한번만 수행//
-    var connection = db_connection_pool(); //DB Connection pool//
-    
     console.log('***********');
 
-    for(var i=0; i<profile_imagefile.length; i++)
+    for(var i=0; i<file_name.length; i++)
     {
-        console.log('insert ['+profile_imagefile[i]+']');
+        console.log('insert ['+file_name[i]+']');
 
-        //파일 중복검사 실시//
+        //파일중복 검사//
+        var is_success_check = File_Insert(file_name[i]); //데이터베이스에 저장//
 
-        var insert_data_array = [profile_imagefile[i]]; //배열로 만든다.//
+        console.log('is_success: '+is_success_check);
 
-        connection.query('insert into filetable(filename) values(?)',insert_data_array, function(error, result){
-            if(error) throw error;
-            else{
-                console.log('insert success... ['+is_duplicate_check+']');
-                console.log('***********');
-            }
-        });
+        if(is_success_check == true) //파일저장 성공//
+        {
+            is_success = true;
+        }
 
-        is_duplicate_check = true;
+        else if(is_success_check == false) //파일저장 실패//
+        {
+            is_success = false;
+        }
     }
+
+    return is_success;
+}
+//////////////////////////////
+function File_Insert(file_name)
+{
+    var is_success = false; //처음엔 실패했다고 가정//
+
+    //우선 검색을 하기 위해서 데이터베이스의 내용을 리스트로 불러와야 한다.//
+    var connection = db_connection_pool(); //DB Connection pool//
+
+    connection.query('select filename from filetable', function(error, rows, fields){
+        if(error) throw error;
+        else{
+            var is_duplicate = false; //기본은 파일에 중복이 있다고 가정//
+
+            for(var i=0; i<rows.length; i++)
+            {
+                if(rows[i].filename == file_name) //행을 돌면서 비교//
+                {
+                    is_duplicate = true; //중복이 존재//
+
+                    break;
+                }
+            }
+
+            if(is_duplicate == true)
+            {
+                console.log('['+file_name+'] file is exist...(not insert db)');
+            }
+
+            else if(is_duplicate == false)
+            {
+                console.log('['+file_name+'] file is not exist...(insert db)');
+
+                INSERT_file(file_name);
+            }
+        }
+    });
+
+    is_success = true;
 
     connection.end(); //데이터베이스 작업을 한 이후 반드시 닫아준다.//
 
-    return is_duplicate_check;
+    return is_success;
+}
+/////////////////////////////
+function INSERT_file(file_name)
+{
+    var connection = db_connection_pool(); //DB Connection pool//
+
+    var insert_data_array = [file_name]; //배열로 만든다.//
+
+    connection.query('insert into filetable(filename) values(?)',insert_data_array, function(error, result){
+        if(error) throw error;
+        else{
+            console.log('insert success...');
+        }
+    });
+
+    connection.end(); //데이터베이스 작업을 한 이후 반드시 닫아준다.//
 }
 //////////////////////////////
 function db_connection_pool()
@@ -213,5 +266,5 @@ function db_connection_pool()
 
     return connection;
 }
-
+/////////////////////////////
 module.exports = router; //모듈 적용//
