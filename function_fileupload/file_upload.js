@@ -63,8 +63,44 @@ router.post('/file_upload', function(request, response){
         console.log(files_json);
         console.log('-----------------------------');
 
-        //추가작업(데이터베이스)//
-        File_save(fields_array, files_array, field_json, files_json, response)
+        //추가작업(데이터베이스).insert하나라도 실패 시 에러//
+        var is_success = File_save(fields_array, files_array, field_json, files_json);
+
+        console.log('insert success : ' + is_success);
+
+        if(is_success == true) //파일저장 성공//
+        {
+            //전송 json객체를 만든다.//
+            var result = 
+            {
+                'fields':field_json,
+                'files':files_json
+            }
+
+            var trans_objeect = 
+            {
+                'is_upload':'success',
+                'data': result
+            }
+        }
+
+        else if(is_success == false) //파일저장 실패//
+        {
+            //전송 json객체를 만든다.//
+            var result = 
+            {
+                'fields':field_json,
+                'files':files_json
+            }
+
+            var trans_objeect = 
+            {
+                'is_upload':'fail',
+                'data': result
+            }   
+        }
+
+        response.send(trans_objeect);
 
         //초기화//
         fields = [];
@@ -82,16 +118,13 @@ router.post('/file_upload', function(request, response){
     });
 });
 //////////////////////////
-function File_save(fields_array, files_array, field_json, files_json, response)
+function File_save(fields_array, files_array)
 {
     var is_success = false; //기본적으로 저장이 실패라 가정//
 
     //저장변수//
     var name, id, password;
     var file_name = []; //파일은 여러개가 될 수 있으니 배열//
-
-    var result;
-    var trans_objeect;
 
     console.log('db job...');
 
@@ -133,43 +166,18 @@ function File_save(fields_array, files_array, field_json, files_json, response)
             console.log('success insert : ' + is_success_str);
 
             is_success = is_success_str;
-
-            if(is_success == true) //파일저장 성공//
-            {
-                //전송 json객체를 만든다.//
-                this.result = 
-                {
-                    'fields':field_json,
-                    'files':files_json
-                }
-
-                this.trans_objeect = 
-                {
-                    'is_upload':'success',
-                    'data': this.result
-                }
-            }
-
-            else if(is_success == false) //파일저장 실패//
-            {
-                //전송 json객체를 만든다.//
-                this.result = 
-                {
-                    'fields':field_json,
-                    'files':files_json
-                }
-
-                this.trans_objeect = 
-                {
-                    'is_upload':'fail',
-                    'data': this.result
-                }   
-            }
         });
     }
 
-    response.send(trans_objeect);
+    is_success = true;
+
+    return is_success;
 }
+//////////////////////////////
+/* Callback list 
+1. 데이터 중복검사 작업
+2. 데이터 삽입 작업
+*/
 //////////////////////////////
 function File_Insert(file_name, callback)
 {
