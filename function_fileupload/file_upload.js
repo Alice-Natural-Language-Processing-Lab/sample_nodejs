@@ -64,45 +64,7 @@ router.post('/file_upload', function(request, response){
         console.log('-----------------------------');
 
         //추가작업(데이터베이스)//
-        var is_success = set_data(fields_array, files_array, response)
-
-        console.log('is_success: '+is_success);
-
-        if(is_success == true) //파일저장 성공//
-        {
-            //전송 json객체를 만든다.//
-            var result = 
-            {
-                'fields':field_json,
-                'files':files_json
-            }
-
-            var trans_objeect = 
-            {
-                'is_upload':'success',
-                'data': result
-            }
-
-            response.send(trans_objeect);   
-        }
-
-        else if(is_success == false)
-        {
-            //전송 json객체를 만든다.//
-            var result = 
-            {
-                'fields':field_json,
-                'files':files_json
-            }
-
-            var trans_objeect = 
-            {
-                'is_upload':'fail',
-                'data': result
-            }   
-
-            response.send(trans_objeect);
-        }
+        File_save(fields_array, files_array, field_json, files_json, response)
 
         //초기화//
         fields = [];
@@ -120,13 +82,16 @@ router.post('/file_upload', function(request, response){
     });
 });
 //////////////////////////
-function set_data(fields_array, files_array, response)
+function File_save(fields_array, files_array, field_json, files_json, response)
 {
     var is_success = false; //기본적으로 저장이 실패라 가정//
 
     //저장변수//
     var name, id, password;
     var file_name = []; //파일은 여러개가 될 수 있으니 배열//
+
+    var result;
+    var trans_objeect;
 
     console.log('db job...');
 
@@ -163,23 +128,45 @@ function set_data(fields_array, files_array, response)
     {
         console.log('insert ['+file_name[i]+']');
 
-        //파일중복 검사//
+        //파일저장.//
         var is_success_check = File_Insert(file_name[i]); //데이터베이스에 저장//
 
         console.log('is_success: '+is_success_check);
 
         if(is_success_check == true) //파일저장 성공//
         {
-            is_success = true;
+            //전송 json객체를 만든다.//
+            result = 
+            {
+                'fields':field_json,
+                'files':files_json
+            }
+
+            trans_objeect = 
+            {
+                'is_upload':'success',
+                'data': result
+            }
         }
 
         else if(is_success_check == false) //파일저장 실패//
         {
-            is_success = false;
+            //전송 json객체를 만든다.//
+            result = 
+            {
+                'fields':field_json,
+                'files':files_json
+            }
+
+            trans_objeect = 
+            {
+                'is_upload':'fail',
+                'data': result
+            }   
         }
     }
 
-    return is_success;
+    response.send(trans_objeect);
 }
 //////////////////////////////
 function File_Insert(file_name)
@@ -213,6 +200,7 @@ function File_Insert(file_name)
             {
                 console.log('['+file_name+'] file is not exist...(insert db)');
 
+                //Callback hell을 방지차원//
                 INSERT_file(file_name);
             }
         }

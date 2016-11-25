@@ -10,10 +10,14 @@ app.use(express.static('upload_file_folder'));
 ex) /function/~(각 파일들에 있는 호출파람)
 1. function/file_upload.js (라우터 경로))
 2. function/push.js
+3. function/file_list.js
 */
 //사용자 정의 모듈 호출(모듈경로)//
 var function_fileupload_router = require('./function_fileupload/file_upload');
 app.use('/function', function_fileupload_router); 
+
+//var function_filelist_router = require('./function_fileupload/file_list');
+//app.use('/function', function_filelist_router);
 
 var function_push_router = require('./function_push/push');
 app.use('/function', function_push_router);
