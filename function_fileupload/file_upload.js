@@ -128,50 +128,52 @@ function File_save(fields_array, files_array, field_json, files_json, response)
     {
         console.log('insert ['+file_name[i]+']');
 
-        //파일저장.//
-        var is_success_check = File_Insert(file_name[i]); //데이터베이스에 저장//
+        //파일저장.(비동기 콜백 작업)//
+        var file_insert_callback = File_Insert(file_name[i],function(is_success_str){
+            console.log('success insert : ' + is_success_str);
 
-        console.log('is_success: '+is_success_check);
+            is_success = is_success_str;
 
-        if(is_success_check == true) //파일저장 성공//
-        {
-            //전송 json객체를 만든다.//
-            result = 
+            if(is_success == true) //파일저장 성공//
             {
-                'fields':field_json,
-                'files':files_json
+                //전송 json객체를 만든다.//
+                this.result = 
+                {
+                    'fields':field_json,
+                    'files':files_json
+                }
+
+                this.trans_objeect = 
+                {
+                    'is_upload':'success',
+                    'data': this.result
+                }
             }
 
-            trans_objeect = 
+            else if(is_success == false) //파일저장 실패//
             {
-                'is_upload':'success',
-                'data': result
-            }
-        }
+                //전송 json객체를 만든다.//
+                this.result = 
+                {
+                    'fields':field_json,
+                    'files':files_json
+                }
 
-        else if(is_success_check == false) //파일저장 실패//
-        {
-            //전송 json객체를 만든다.//
-            result = 
-            {
-                'fields':field_json,
-                'files':files_json
+                this.trans_objeect = 
+                {
+                    'is_upload':'fail',
+                    'data': this.result
+                }   
             }
-
-            trans_objeect = 
-            {
-                'is_upload':'fail',
-                'data': result
-            }   
-        }
+        });
     }
 
     response.send(trans_objeect);
 }
 //////////////////////////////
-function File_Insert(file_name)
+function File_Insert(file_name, callback)
 {
-    var is_success = false; //처음엔 실패했다고 가정//
+    var is_success_str = false; //처음엔 실패했다고 가정//
 
     //우선 검색을 하기 위해서 데이터베이스의 내용을 리스트로 불러와야 한다.//
     var connection = db_connection_pool(); //DB Connection pool//
@@ -194,28 +196,37 @@ function File_Insert(file_name)
             if(is_duplicate == true)
             {
                 console.log('['+file_name+'] file is exist...(not insert db)');
+
+                is_success_str = true;
+
+                callback(is_success_str);
             }
 
             else if(is_duplicate == false)
             {
                 console.log('['+file_name+'] file is not exist...(insert db)');
 
-                //Callback hell을 방지차원//
-                INSERT_file(file_name);
+                //비동기이므로 콜백작업//
+                var insert_file_callback = INSERT_file(file_name, function(is_success){
+                    console.log('callback value: '+is_success);
+
+                    is_success_str = is_success; //값을 전달하기 위한 설정//
+                    
+                    //콜백지옥 발생가능 존재//
+                    callback(is_success_str);
+                });
             }
         }
     });
 
-    is_success = true;
-
     connection.end(); //데이터베이스 작업을 한 이후 반드시 닫아준다.//
-
-    return is_success;
 }
 /////////////////////////////
-function INSERT_file(file_name)
+function INSERT_file(file_name, callback) //콜백 추가//
 {
     var connection = db_connection_pool(); //DB Connection pool//
+
+    var is_success = false; //처음 실패라 가정//
 
     var insert_data_array = [file_name]; //배열로 만든다.//
 
@@ -223,6 +234,10 @@ function INSERT_file(file_name)
         if(error) throw error;
         else{
             console.log('insert success...');
+
+            is_success = true;
+
+            callback(is_success); //콜백함수의 인자에 맞추어서 매개변수를 설정//
         }
     });
 
