@@ -7,9 +7,9 @@ var util = require('util');
 var os = require('os');
 var mysql = require('mysql'); //데이터베이스 연결 모듈//
 
-var app = express();
 //라우터별로 분리하기 위해 express의 라우터 기능 사용//
 var router = express.Router();
+//FORM타입이므로 urlEncoder타입으로 하지 않는다.//
 
 //POST설정//
 router.use(bodyParser.json());
@@ -154,9 +154,9 @@ function File_save(fields_array, files_array)
     file_name = files_array; //배열을 저장.//
 
     //데이터베이스에 저장.//
-    //파일을 1개 들어온다는 가정이니 insert문을 for문을 이용해서 한번만 수행//
     console.log('***********');
 
+    //파일을 1개 들어온다는 가정이니 insert문을 for문을 이용해서 한번만 수행//
     for(var i=0; i<file_name.length; i++)
     {
         console.log('insert ['+file_name[i]+']');
@@ -201,7 +201,7 @@ function File_Insert(file_name, callback)
                 }
             }
 
-            if(is_duplicate == true)
+            if(is_duplicate == true) //중복파일이 존재하는 경우//
             {
                 console.log('['+file_name+'] file is exist...(not insert db)');
 
@@ -210,12 +210,13 @@ function File_Insert(file_name, callback)
                 callback(is_success_str);
             }
 
-            else if(is_duplicate == false)
+            else if(is_duplicate == false) //중복파일이 존재하지 않는 경우// 
             {
                 console.log('['+file_name+'] file is not exist...(insert db)');
 
                 //비동기이므로 콜백작업//
                 var insert_file_callback = INSERT_file(file_name, function(is_success){
+                    //해당 구역의 스코프는 INSERT_file()함수의 작업이 모두 종료 후 적용//
                     console.log('callback value: '+is_success);
 
                     is_success_str = is_success; //값을 전달하기 위한 설정//
@@ -230,7 +231,7 @@ function File_Insert(file_name, callback)
     connection.end(); //데이터베이스 작업을 한 이후 반드시 닫아준다.//
 }
 /////////////////////////////
-function INSERT_file(file_name, callback) //콜백 추가//
+function INSERT_file(file_name, callback) //콜백 추가(상위함수나 호출하는 부분으로 콜백을 전달)//
 {
     var connection = db_connection_pool(); //DB Connection pool//
 
@@ -243,7 +244,7 @@ function INSERT_file(file_name, callback) //콜백 추가//
         else{
             console.log('insert success...');
 
-            is_success = true;
+            is_success = true; //성공이라 설정//
 
             callback(is_success); //콜백함수의 인자에 맞추어서 매개변수를 설정//
         }
