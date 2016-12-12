@@ -174,7 +174,7 @@ function File_save(fields_array, files_array)
     return is_success;
 }
 //////////////////////////////
-/* Callback list 
+/* Callback list - 비동기 순차적으로 구성가능
 1. 데이터 중복검사 작업
 2. 데이터 삽입 작업
 */

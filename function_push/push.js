@@ -11,7 +11,7 @@ var router = express.Router();
 var message_str;
 
 //현재 서버의 api key//
-var server_api_key = "AIzaSyA-TPJ-6ueqhzcdFlCxz0A5SgBVKTuN1MI";
+var server_api_key = "AIzaSyDhf7UvCdzTqu-k_xDIkoJJt3fZ_Hlh3KE";
 //sender id : 247653564330//
 var sender = new gcm.Sender(server_api_key);
 var registrationIds = [];
@@ -55,7 +55,7 @@ function pushAlarm(message_str)
 
     //푸시를 받을 토큰값들을 설정(데이터베이스 작업 연동 가능부분)//
     //push를 전송할 각 디바이스의 token을 등록//
-    var token = "fYUNL7zZh0A:APA91bFdMQqmfskcRf2aQzs6MgSrMRoY0WCljfAtw0LPMtafoZg7Eq2mr9AeCqavj68e0LZ7i2rvjrn5XnwvwCrNewsyB3vzHnH41PtOHv15mEjKTT2At6LfKNUQ2uSn3shJRcL7TRfU";
+    var token = "fHM1hw92wOo:APA91bG4Iiy44jVFyxf2abKfF_B9SusckwSvpdpNRVeBw4fwTQ2CLkWXZY5dxT5tQafLLf8wIN5gw5bCrL2zDvGV2Dk5CNVXZHzb83GcJYoKwWoaG1FQN0P2I84yPF7x3F7M37dNl-0M";
     //var token_2 = "c-SlsoDbS08:APA91bH1yuQHf5jSqHvgPsmbopOvMp_l34SM6KOH_MAnQxOe63YFT5ven04ACq8VzXa8d2fCdr02Dfd-HSlcgYpyk5CVVFfkVuz2k5PPxdPtULSyOCQdJj6X5QkejNjgjcVnqDJm4vXu";
 
     registrationIds.push(token);

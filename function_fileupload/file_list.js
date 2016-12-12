@@ -43,7 +43,7 @@ function File_LIST(page, response)
 
                     for(var i=0; i<rows.length; i++)
                     {
-                        //정보를 배열에 저장//
+                        //정보를 배열에 저장(정적파일 서비스를 위한 서버주소)//
                         var server_info = get_fileserver_info();
 
                         fileinfo.push([rows[i].filenumber, server_info+rows[i].filename]);
