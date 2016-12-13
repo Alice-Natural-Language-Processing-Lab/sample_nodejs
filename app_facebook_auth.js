@@ -33,7 +33,7 @@ function function_graphapi(accessToken, response)
 
         var id = res.id;
         var name = res.name;
-        var email = res.name;
+        var email = res.email;
         var gender = res.gender;
         var profile_imageurl = 'http://graph.facebook.com/'+id+'/picture?type=normal';
 
