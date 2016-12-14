@@ -3,6 +3,7 @@ var bodyParser = require('body-parser'); //POST방식//
 var assert = require('assert'); //NULL 유효검증 모듈//
 var async = require('async'); //비동기 순차처리를 위한 모듈//
 //데이터베이스 관련 모듈//
+//사용자 중요정보 - RDBMS 사용 / 다양하고 형식이 지정되지 않은 정보 - NoSQL//
 var MongoClient = require('mongodb').MongoClient;
 var ObjectId = require('mongodb').ObjectID;
 
