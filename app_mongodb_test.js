@@ -95,6 +95,13 @@ app.get('/dropindex_mongodb', function(requeest, response){
     dropindex_mongodb(response);
 });
 
+app.get('/getdoc_count_mongodb', function(request, response){
+    console.log('get document count');
+
+    //컬렉션의 문서들의 개수를 가져온다.//
+    get_doc_count(response);
+});
+
 app.listen(3000, function(){
     console.log('Connected 3000 port')
     console.log('--------------------------');
@@ -151,6 +158,8 @@ function insert_mongodb(name, age, address, response)
                 assert.equal(err, null);
                 
                 console.log("Inserted a document into the restaurants collection.");
+
+                db.close(); //개방했으니 사용 후 닫아준다.//
                 
                 callback(null, 'insert succcess mongodb'); //콜백호출//
             });
@@ -196,7 +205,9 @@ function find_mongodb(response)
 
                     console.log(items);
 
-                    callback(null, 'find success...', items);
+                    db.close(); //개방했으니 사용 후 닫아준다.//
+
+                    callback(null, 'find ok...', items);
                 });
             });
         }
@@ -231,22 +242,24 @@ function search_mongodb(search_condition_name, response)
             //조회는 커서(Cursor)의 개념을 이용한다.//
             /*조건절은 find()내부에 JSON형태로 작성한다. 기존 연속된 조건은 RDBMS에서는 and를 이용하였지만 MongoDB에서는 key를 붙
             //여주면 된다.*/
-            var cursor = db.collection('users')
-            .find({
-                "name":search_condition_name
-            });
+            db.collection('users', function(err, collection) {
+                collection
+                .find({
+                    "name":search_condition_name
+                })
+                .sort({
+                    "age":1
+                })
+                //toArray를 이용해서 Document의 배열로 반환//
+                .toArray(function(err, doc) {
+                    assert.equal(err, null);
 
-            //RDBMS일 경우 doc -> row, NoSQL row -> doc(document)//
-            cursor.each(function(err, doc){
-                assert.equal(err, null);
+                   console.log(doc);
 
-                if(doc != null) //검색결과가 존재한다는 경우(검색성공)//
-                {
-                    console.log(doc);
+                    db.close(); //개방했으니 사용 후 닫아준다.//
 
-                    //해당 JSON구조를 파싱//
-                    callback(null, 'search success...', doc);
-                }
+                    callback(null, 'search ok(if value is not exist that send [])...', doc);
+                });
             });
         }
     ],
@@ -281,13 +294,15 @@ function update_mongodb(update_condition_name, update_age_value, response)
             //업데이트절은 '$set'//
             db.collection('users').updateOne(
                 {"name":update_condition_name},
-                {$set: {"age":update_age_value}},
-                function(err, results){
-                    assert.equal(null, err);
+                {$set: {"age":update_age_value}}, 
+            function(err, results){
+                assert.equal(null, err);
                     
-                    //console.log(results);
+                //console.log(results);
 
-                    callback(null, 'update success...');
+                db.close(); //개방했으니 사용 후 닫아준다.//
+
+                callback(null, 'update ok(if value is not exist that no adjust)...');
             });
         }
     ],
@@ -325,7 +340,9 @@ function remove_mongodb(remove_condition_name, response)
                     
                 //console.log(results);
 
-                callback(null, 'remove success...');
+                db.close(); //개방했으니 사용 후 닫아준다.//
+
+                callback(null, 'remove ok(if value is not exist that no adjust)...');
             });
         }
     ],
@@ -360,6 +377,8 @@ function createindex_mongodb(response)
                 "name":1
             }, null, function(err, results){
                 assert.equal(null, err);
+
+                db.close(); //개방했으니 사용 후 닫아준다.//
 
                 callback(null, 'create index success...');
             });
@@ -397,6 +416,8 @@ function dropindex_mongodb(response)
             }, null, function(err, results){
                 assert.equal(null, err);
 
+                db.close(); //개방했으니 사용 후 닫아준다.//
+
                 callback(null, 'drop index success...');
             });
         }
@@ -407,6 +428,41 @@ function dropindex_mongodb(response)
         console.log(message);
 
         response.send(message);
+
+        console.log('--------------------------');
+    });
+}
+////////////////////////////
+function get_doc_count(response)
+{
+    async.waterfall([
+        //파일이 현재 저장소에 저장되어있는지 검사//
+        function(callback) //첫 시작은 하나의 callback으로 시작한다.//
+        {
+            MongoClient.connect(url, function(err, db){
+                assert.equal(null, err);
+
+                callback(null, db);
+            });
+        },
+        //Task 2 : get count document//
+        function(db, callback)
+        {
+            db.collection('users').count({}, function(err, numOfDocs){
+                assert.equal(null, err);
+
+                db.close(); //개방했으니 사용 후 닫아준다.//
+
+                callback(null, numOfDocs);
+            });
+        }
+    ],
+    //Final Task : send//
+    function(callback, numOfDocs)
+    {
+        console.log('users collection count: ' + numOfDocs);
+
+        response.send(''+numOfDocs);
 
         console.log('--------------------------');
     });
