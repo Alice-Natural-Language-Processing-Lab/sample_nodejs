@@ -81,7 +81,21 @@ function Decrypt_str(cipherd, response){
 
     console.log('--------------------------');
 
-    response.send(cipherd);
+    //전송할 JSON포맷을 만든다.//
+    var result = 
+    {
+        'encrypt':cipherd
+    }
+
+    var trans_objeect = 
+    {
+        'is_success':'ok',
+        'data':result
+    }
+
+    var trans_json = JSON.stringify(trans_objeect); //json으로 반환//
+
+    response.send(trans_json);
 }
 //////////////////////////
 function Encrypt_hash(original_text, response){
@@ -94,5 +108,19 @@ function Encrypt_hash(original_text, response){
 
     console.log('--------------------------');
 
-    response.send(pass);
+    //전송할 JSON포맷을 만든다.//
+    var result = 
+    {
+        'encrypt':pass
+    }
+
+    var trans_objeect = 
+    {
+        'is_success':'ok',
+        'data':result
+    }
+
+    var trans_json = JSON.stringify(trans_objeect); //json으로 반환//
+
+    response.send(trans_json);
 }
