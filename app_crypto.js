@@ -46,6 +46,9 @@ var hash = crypto.getHashes(); //Hash방식의 암호화 알고리즘 정보 출
 var cipherd; //aes로 암호화 된 암호문//
 var original_text; //해시가 적용되지 않은 일반 평문//
 
+//적용 가능 알고리즘 목록//
+var algorithm_list = [{'name':'aes256'}, {'name':'sha256'}];
+
 app.post('/cipher_test', function(request, response){
     cipherd = request.body.input_password; //기존 약속된 암호화 방식으로 암호화된 데이터가 입력//
 
@@ -56,6 +59,10 @@ app.post('/hash_test', function(request, response){
     original_text = request.body.input_str; //해시가 적용되어야 할 일반 평문 데이터//
 
     Encrypt_hash(original_text, response);
+});
+
+app.get('/algorithm_list', function(request, response){
+    get_data(response);
 });
 
 app.listen(3000, function(){
@@ -123,4 +130,22 @@ function Encrypt_hash(original_text, response){
     var trans_json = JSON.stringify(trans_objeect); //json으로 반환//
 
     response.send(trans_json);
+}
+/////////////////////////////
+function get_data(response){
+    //전송할 JSON포맷을 만든다.//
+    var trans_objeect = 
+    {
+        'algorithms':algorithm_list
+    }
+
+    var trans_json = JSON.stringify(trans_objeect); //json으로 반환//
+
+    response.send(trans_json);
+
+    console.log('get data list');
+
+    //암호화된 값을 활용//
+
+    console.log('--------------------------');
 }
