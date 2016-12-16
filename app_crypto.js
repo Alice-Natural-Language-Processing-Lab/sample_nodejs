@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({     //to support URL-encoded bodies (url-encoded
 }));
 
 // ******<Cipher 암호화 관련 변수>****** //
-var crypto_algorithm = 'aes256';
+var crypto_algorithm = 'aes-128-ecb'; //안드로이드와 호환을 위해서 aes-128-ecb로 설정//
 var crypto_key = 'CIPHER_KEY'; //해당 키값은 서버와 클라이언트 모두 동일해야 한다.(외부로 노출되면 안된다.)//
 //서버, 클라이언트 각각 로컬에 저장. 키 값을 서로 전송하진 않는다.(외부통신 보안에 취약)//
 //input - output은 서버와 클라이언트 상호 대치적이다.//
@@ -112,7 +112,6 @@ function Encrypt_hash(original_text, response){
     console.log('Encrypt hash str : ' + pass);
 
     //암호화된 값을 활용//
-
     console.log('--------------------------');
 
     //전송할 JSON포맷을 만든다.//
