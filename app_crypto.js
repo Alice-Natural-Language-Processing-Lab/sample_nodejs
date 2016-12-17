@@ -21,6 +21,15 @@ var crypto_inputtype = 'utf8';
 var crypto_outputtype = 'hex';
 // ********************************* //
 
+/*// ********<Hash 암호화 관련 변수>********> //
+var key = 'HASH_KEY';
+var hash_algorithm = 'sha512';
+var outputtype = 'hex';
+// ************************************ //*/
+
+//적용 가능 알고리즘 목록//
+var algorithm_list = [{'name':'aes128'}, {'name':'sha512'}];
+
 //암호화 모듈 서비스//
 var cipher = crypto.getCiphers(); //Cipher방식의 암호화 알고리즘의 정보를 출력//
 /*Cipher기법은 일반적인 암호화 방식으로 평문 -> 암호문 -> 복호문(평문)의 방식으로 암/복호화를 합니다.//
@@ -29,9 +38,6 @@ var cipher = crypto.getCiphers(); //Cipher방식의 암호화 알고리즘의 �
 //입력변수//
 var cipherd; //aes로 암호화 된 암호문//
 var hash_encrypt_data; //해시가 적용된 암호문//
-
-//적용 가능 알고리즘 목록//
-var algorithm_list = [{'name':'aes128'}, {'name':'sha512'}];
 
 app.post('/cipher_test', function(request, response){
     cipherd = request.body.input_password; //기존 약속된 암호화 방식으로 암호화된 데이터가 입력//
@@ -91,6 +97,14 @@ function Decrypt_str(cipherd, response){
 //////////////////////////
 function save_hash(hash_encrypt_data, response){
     console.log('Encrypt hash str : ' + hash_encrypt_data);
+
+    /*//해쉬함수일 경우 매번 해쉬의 값을 달라지게 하기 위해서 update중복을 피하기 위해서 객체를 지역적으로 할당//
+    var hash = crypto.createHash(hash_algorithm); //Hash 방식의 암호화 알고리즘의 정보 초기화//
+    hash.update('s');
+    var value = hash.digest('hex');
+
+    // print result
+    console.log(value);*/
 
     /*눈사태 효과 : 원문(Plaintext)의 한 비트의 변화가 최종 암호문(Ciphertext)에 큰 변화를 주는 효과.모든 암호에서 핵심적으로
     요구되는 암호학적 특징. 특히 블록암호나 단방향 해시 함수에서 주로 요구한다. 조금만 바뀌어도 유사성을 찾을 수 없게 함. 암호를 만들
