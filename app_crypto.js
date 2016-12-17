@@ -40,7 +40,7 @@ app.post('/cipher_test', function(request, response){
 });
 
 app.post('/hash_trans', function(request, response){
-    hash_encrypt_data = request.body.input_str; //해시가 적용되어야 할 일반 평문 데이터//
+    hash_encrypt_data = request.body.input_hash; //해시가 적용된 데이터//
 
     save_hash(hash_encrypt_data, response);
 });
