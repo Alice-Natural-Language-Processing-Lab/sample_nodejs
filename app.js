@@ -23,6 +23,9 @@ app.use('/function', function_filedel_router);
 var function_filelist_router = require('./function_fileupload/file_list');
 app.use('/function', function_filelist_router);
 
+var function_filelist_router = require('./function_fileupload/ios_file_upload');
+app.use('/function', function_filelist_router);
+
 var function_push_router = require('./function_push/push');
 app.use('/function', function_push_router);
 
